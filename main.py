@@ -1,9 +1,14 @@
 from modules.mp3 import Mp3
+from modules.server import AudioServer
+
 
 if __name__ == "__main__":
     running = True
+    srv = AudioServer()
+    srv.start()
+    mp3 = Mp3()
+
     while running:
-        mon_fichier = "/home/bexjo/Music/badromance.mp3"
-        player = Mp3()
-        player.playlist.add("localPath", mon_fichier, "Bad Romance")
-        player.play()
+        if srv.last_message:
+            print(f"Message intercepté: {srv.last_message}")
+            srv.last_message = None  # Réinitialiser après traitement
