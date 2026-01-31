@@ -20,7 +20,11 @@ class AudioServer:
 
     def _handle_client(self, client_socket, address):
         try:
-            data = client_socket.recv(4096).decode('utf-8').strip()
+            raw_data = client_socket.recv(4096)
+            if not raw_data:
+                return
+
+            data = raw_data.decode('utf-8').strip()
             if data:
                 msg = {
                     'message': data,
@@ -31,6 +35,10 @@ class AudioServer:
                 # place le message dans la queue (thread-safe)
                 self._queue.put(msg)
                 # NE PAS fermer le socket ici — il sera utilisé pour répondre
+            else:
+                # Si le message est vide ou contient uniquement des espaces
+                client_socket.send(b"Erreur: Commande vide ou invalide")
+                client_socket.close()
         except Exception as e:
             print(f"Erreur: {e}")
             try:
