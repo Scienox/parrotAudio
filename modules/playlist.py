@@ -19,7 +19,7 @@ class Playlist:
         self.current = None
         self.size = 0
     
-    def add(self, typePath: str, path: str, title: str = None):
+    def __add(self, typePath: str, path: str, title: str = None):
         node = NodeMusic(typePath, path, title)
         
         if self.head is None:
@@ -35,6 +35,13 @@ class Playlist:
             self.tail.next = self.head
         
         self.size += 1
+
+    def add_local(self, file: str, title: str = None):
+        self.__add("local", f"/home/bexjo/Music/{file}", title)
+
+    def add_url(self, url: str, title: str = None):
+        self.__add("url", url, title)
+        
     
     def next_music(self):
         """Passe à la musique suivante."""

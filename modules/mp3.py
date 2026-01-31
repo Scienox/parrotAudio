@@ -1,6 +1,7 @@
 import vlc
 import time
 import os
+import threading
 from .playlist import Playlist
 
 
@@ -10,6 +11,7 @@ class Mp3:
         self.instance = None
         self.player = None
         self.media = None
+        self.music_folder = "/home/bexjo/Music/"
 
     def _init_vlc(self):
         if self.instance is None:
@@ -62,3 +64,34 @@ class Mp3:
         media = self.instance.media_new(self.file_path)
         media.parse()
         return media.get_duration()
+    
+    def handle_command(self, message: dict, server):
+        """Traite une commande reçue et répond."""
+        cmd = message['message'].lower()
+        
+        try:
+            doubleCmd = True if ':' in cmd else False
+            if doubleCmd:
+                cmd, value = cmd.split(':', 1)
+                if cmd == 'add':
+                    if os.path.isfile(self.music_folder + value):
+                        self.playlist.add_local(value)
+                        server.send_response(message, f"Musique ajoutée: {value}")
+                    else:
+                        server.send_response(message, f"Erreur: Fichier introuvable: {value}")
+            elif cmd == 'play':
+                # Lancer la musique en arrière-plan (threading)
+                # pour ne pas bloquer la réponse
+                thread = threading.Thread(target=self.play, daemon=True)
+                thread.start()
+                server.send_response(message, f"{self.playlist.get_current().title} en lecture")
+            elif cmd == 'pause':
+                self.pause()
+                server.send_response(message, "Lecture en pause")
+            elif cmd == 'resume':
+                self.resume()
+                server.send_response(message, "Lecture reprise")
+            else:
+                server.send_response(message, "Erreur: Commande inconnue")
+        except Exception as e:
+            server.send_response(message, f"Erreur: {e}")
