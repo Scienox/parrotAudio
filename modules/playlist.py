@@ -1,0 +1,58 @@
+class NodeMusic:
+    
+    def __init__(self, typePath: str, path: str, title: str):
+        self.typePath = typePath
+        self.path = path
+        self.title = title
+        self.next = None
+        self.prev = None
+    
+    def __repr__(self):
+        return f"NodeMusic(title='{self.title}')"
+
+
+class Playlist:
+    
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self.current = None
+        self.size = 0
+    
+    def add(self, typePath: str, path: str, title: str = None):
+        node = NodeMusic(typePath, path, title)
+        
+        if self.head is None:
+            # Première musique
+            self.head = self.head.next = self.head.prev = self.tail = node
+            self.current = node
+        else:
+            # Ajouter à la fin
+            self.tail.next = node
+            node.prev = self.tail
+            self.tail = node
+            self.head.prev = self.tail
+            self.tail.next = self.head
+        
+        self.size += 1
+    
+    def next_music(self):
+        """Passe à la musique suivante."""
+        if self.current and self.current.next:
+            self.current = self.current.next
+            return self.current
+        return None
+    
+    def prev_music(self):
+        """Revient à la musique précédente."""
+        if self.current and self.current.prev:
+            self.current = self.current.prev
+            return self.current
+        return None
+    
+    def get_current(self):
+        return self.current
+    
+    def clear(self):
+        self.head = self.current = None
+        self.size = 0

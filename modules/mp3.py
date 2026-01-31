@@ -1,20 +1,16 @@
 import vlc
 import time
 import os
+from .playlist import Playlist
 
 
-class Mp3:    
-    def __init__(self, file_path):
-        self.file_path = file_path
+class Mp3:
+    def __init__(self):
+        self.playlist = Playlist()
         self.instance = None
         self.player = None
         self.media = None
-        self._validate_file()
-    
-    def _validate_file(self):
-        if not os.path.exists(self.file_path):
-            raise FileNotFoundError(f"Le fichier {self.file_path} est introuvable.")
-    
+
     def _init_vlc(self):
         if self.instance is None:
             self.instance = vlc.Instance('--intf dummy --no-video --quiet')
@@ -22,11 +18,11 @@ class Mp3:
     
     def play(self):
         self._init_vlc()
-        
-        self.media = self.instance.media_new(self.file_path)
+        song = self.playlist.get_current()
+        self.media = self.instance.media_new(song.path)
         self.player.set_media(self.media)
         
-        print(f"Lecture en cours : {self.file_path}")
+        print(f"Lecture en cours : {song.title}")
         self.player.play()
         
         time.sleep(1)
