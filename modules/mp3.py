@@ -25,6 +25,7 @@ class Mp3:
         """Déclenché par VLC quand une piste se termine."""
         if self.on_music_end:
             # On exécute le callback dans un thread pour ne pas bloquer VLC
+            self.next()
             threading.Thread(target=self.on_music_end, daemon=True).start()
     
     def __play(self):
