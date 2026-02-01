@@ -1,3 +1,5 @@
+from os import listdir
+
 class NodeMusic:
     
     def __init__(self, typePath: str, path: str, title: str):
@@ -14,6 +16,7 @@ class NodeMusic:
 class Playlist:
     
     def __init__(self):
+        self.path_local_files = "/home/bexjo/Music/"
         self.head = None
         self.tail = None
         self.current = None
@@ -37,7 +40,7 @@ class Playlist:
         self.size += 1
 
     def add_local(self, file: str, title: str = None):
-        self.__add("local", f"/home/bexjo/Music/{file}", title)
+        self.__add("local", f"{self.path_local_files}{file}", title)
 
     def add_url(self, url: str, title: str = None):
         self.__add("url", url, title)
@@ -66,18 +69,19 @@ class Playlist:
         for _ in range(self.size):
             yield node
             node = node.next
-    
-    def show_music_files(self):
-        value = ""
-        for node in self._iterate_playlist():
-            value += f"{node.path.split('/')[-1]}\n"
-        return value
-    
+
     def show_music_titles(self):
         value = ""
         for node in self._iterate_playlist():
             value += f"{node.title}\n"
         return value
+    
+    def found_files_from_folder(self, folder=None):
+        if folder is None:
+            folder = self.path_local_files
+        files = listdir(folder)
+        files = "\n".join("├── " + f for f in files)
+        return files
     
     def clear(self):
         self.head = self.current = None

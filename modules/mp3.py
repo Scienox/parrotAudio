@@ -107,14 +107,14 @@ class Mp3:
                         response = "Playlist:\n" + "\n".join(titles)
                         server.send_response(message, response)
                     elif value == "files":
-                        files = self.playlist.show_music_files()
+                        files = self.playlist.found_files_from_folder()
                         response = "Fichiers musicaux:\n" + files
                         server.send_response(message, response)
                     else:
                         server.send_response(message, "Erreur: Commande show inconnue")
                 else:
                     server.send_response(message, "Erreur: Commande inconnue")
-                    
+
             elif cmd == 'play':
                 # Lancer la musique en arrière-plan
                 thread = threading.Thread(target=self.play, daemon=True)
