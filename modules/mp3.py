@@ -104,7 +104,7 @@ class Mp3:
                 elif cmd == "show":
                     if value == "playlist":
                         titles = self.playlist.show_music_titles()
-                        response = "Playlist:\n" + "\n".join(titles)
+                        response = f"Playlist:\n{titles}"
                         server.send_response(message, response)
                     elif value == "files":
                         files = self.playlist.found_files_from_folder()
