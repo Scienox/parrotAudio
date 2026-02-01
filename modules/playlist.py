@@ -60,6 +60,25 @@ class Playlist:
     def get_current(self):
         return self.current
     
+    def _iterate_playlist(self):
+        """Itère sur toutes les musiques de la playlist."""
+        node = self.head
+        for _ in range(self.size):
+            yield node
+            node = node.next
+    
+    def show_music_files(self):
+        value = ""
+        for node in self._iterate_playlist():
+            value += f"{node.path.split('/')[-1]}\n"
+        return value
+    
+    def show_music_titles(self):
+        value = ""
+        for node in self._iterate_playlist():
+            value += f"{node.title}\n"
+        return value
+    
     def clear(self):
         self.head = self.current = None
         self.size = 0

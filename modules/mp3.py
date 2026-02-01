@@ -96,10 +96,25 @@ class Mp3:
                 cmd, value = cmd.split(':', 1)
                 if cmd == 'add':
                     if os.path.isfile(self.music_folder + value):
-                        self.playlist.add_local(value)
+                        title = value.split('/')[-1].split('.')[0]
+                        self.playlist.add_local(value, title=title)
                         server.send_response(message, f"Musique ajoutée: {value}")
                     else:
                         server.send_response(message, f"Erreur: Fichier introuvable: {value}")
+                elif cmd == "show":
+                    if value == "playlist":
+                        titles = self.playlist.show_music_titles()
+                        response = "Playlist:\n" + "\n".join(titles)
+                        server.send_response(message, response)
+                    elif value == "files":
+                        files = self.playlist.show_music_files()
+                        response = "Fichiers musicaux:\n" + files
+                        server.send_response(message, response)
+                    else:
+                        server.send_response(message, "Erreur: Commande show inconnue")
+                else:
+                    server.send_response(message, "Erreur: Commande inconnue")
+                    
             elif cmd == 'play':
                 # Lancer la musique en arrière-plan
                 thread = threading.Thread(target=self.play, daemon=True)
