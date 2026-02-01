@@ -12,15 +12,27 @@ class Mp3:
         self.player = None
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
+        self.on_music_end = self.play
 
     def _init_vlc(self):
         if self.instance is None:
             self.instance = vlc.Instance('--intf dummy --no-video --quiet')
             self.player = self.instance.media_player_new()
+            self.event_manager = self.player.event_manager()
+            self.event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self._on_music_end)
+
+    def _on_music_end(self, event):
+        """Déclenché par VLC quand une piste se termine."""
+        if self.on_music_end:
+            # On exécute le callback dans un thread pour ne pas bloquer VLC
+            threading.Thread(target=self.on_music_end, daemon=True).start()
     
-    def play(self):
+    def __play(self):
         self._init_vlc()
         song = self.playlist.get_current()
+        if not song:
+            return
+
         self.media = self.instance.media_new(song.path)
         self.player.set_media(self.media)
         
@@ -35,6 +47,12 @@ class Mp3:
         except KeyboardInterrupt:
             print("\nArrêt de la lecture par l'utilisateur.")
             self.stop()
+    
+    def play(self):
+        threading.Thread(target=self.__play, daemon=True).start()
+
+    def next(self):
+        self.current = self.playlist.next_music()
     
     def stop(self):
         if self.player:
@@ -61,7 +79,9 @@ class Mp3:
     
     def get_duration(self):
         self._init_vlc()
-        media = self.instance.media_new(self.file_path)
+        song = self.playlist.get_current()
+        if not song: return 0
+        media = self.instance.media_new(song.path)
         media.parse()
         return media.get_duration()
     
@@ -80,11 +100,13 @@ class Mp3:
                     else:
                         server.send_response(message, f"Erreur: Fichier introuvable: {value}")
             elif cmd == 'play':
-                # Lancer la musique en arrière-plan (threading)
-                # pour ne pas bloquer la réponse
+                # Lancer la musique en arrière-plan
                 thread = threading.Thread(target=self.play, daemon=True)
                 thread.start()
                 server.send_response(message, f"{self.playlist.get_current().title} en lecture")
+            elif cmd == 'next':
+                self.next()
+                server.send_response(message, f"Passage à : {self.playlist.get_current().title}")
             elif cmd == 'pause':
                 self.pause()
                 server.send_response(message, "Lecture en pause")
