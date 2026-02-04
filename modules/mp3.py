@@ -14,6 +14,7 @@ class Mp3:
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
         self.status = {"Is playing": self.is_playing}
+        self._init_vlc()
 
     def _init_vlc(self):
         if self.instance is None:
