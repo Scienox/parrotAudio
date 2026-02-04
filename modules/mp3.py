@@ -93,7 +93,7 @@ class Mp3:
     def get_status(self):
         value = ""
         for key, val in self.status.items():
-            value += f"{key}:{value()}\n"
+            value += f"{key}:{str(value())}\n"
         return value
 
     def is_playing(self):
