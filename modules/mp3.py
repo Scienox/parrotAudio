@@ -89,7 +89,7 @@ class Mp3:
 
     def get_status(self):
         value = ""
-        for _, val in self.status:
+        for _, val in self.status.items():
             value += str(val())
         return value
 
