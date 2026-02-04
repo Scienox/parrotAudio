@@ -71,9 +71,7 @@ class Playlist:
             node = node.next
 
     def show_music_titles(self):
-        value = ""
-        for node in self._iterate_playlist():
-            value += f"{node.title}\n"
+        value = "|".join(node.title for node in self._iterate_playlist())
         return value
     
     def found_files_from_folder(self, folder=None):
