@@ -80,7 +80,7 @@ class Playlist:
         if folder is None:
             folder = self.path_local_files
         files = listdir(folder)
-        files = "\n".join("├── " + f for f in files)
+        files = "|".join(f for f in files)
         return files
     
     def clear(self):

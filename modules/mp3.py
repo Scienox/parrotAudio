@@ -13,7 +13,9 @@ class Mp3:
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
-        self.status = {"Is playing": self.is_playing}
+        self.status = {"Is playing": self.is_playing,
+        "Local files": self.playlist.found_files_from_folder,
+        }
         self._init_vlc()
 
     def _init_vlc(self):
@@ -90,8 +92,8 @@ class Mp3:
 
     def get_status(self):
         value = ""
-        for _, val in self.status.items():
-            value += str(val())
+        for key, val in self.status.items():
+            value += f"{key}:{value()}\n"
         return value
 
     def is_playing(self):
