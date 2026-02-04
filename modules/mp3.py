@@ -13,7 +13,7 @@ class Mp3:
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
-        self.status = None
+        self.status = {"Is playing": self.is_playing}
 
     def _init_vlc(self):
         if self.instance is None:
@@ -90,7 +90,7 @@ class Mp3:
     def get_status(self):
         value = ""
         for _, val in self.status:
-            value += val
+            value += str(val())
         return value
 
     def is_playing(self):
