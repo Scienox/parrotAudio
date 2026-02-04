@@ -13,7 +13,7 @@ class Mp3:
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
-        self.status = {"Is playing": self.is_playing()}
+        self.status = None
 
     def _init_vlc(self):
         if self.instance is None:
@@ -92,6 +92,9 @@ class Mp3:
         for _, val in self.status:
             value += val
         return value
+
+    def is_playing(self):
+        return self.player.is_playing()
     
     def handle_command(self, message: dict, server):
         """Traite une commande reçue et répond."""
