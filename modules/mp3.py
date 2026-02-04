@@ -13,6 +13,7 @@ class Mp3:
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
+        self.status = {"Is playing": self.is_playing()}
 
     def _init_vlc(self):
         if self.instance is None:
@@ -85,6 +86,12 @@ class Mp3:
         media = self.instance.media_new(song.path)
         media.parse()
         return media.get_duration()
+
+    def get_status(self):
+        value = ""
+        for _, val in self.status:
+            value += val
+        return value
     
     def handle_command(self, message: dict, server):
         """Traite une commande reçue et répond."""
@@ -114,6 +121,9 @@ class Mp3:
                         server.send_response(message, "Erreur: Commande show inconnue")
                 else:
                     server.send_response(message, "Erreur: Commande inconnue")
+
+            elif cmd == 'get_status':
+                server.send_response(message, self.get_status())
 
             elif cmd == 'play':
                 # Lancer la musique en arrière-plan
