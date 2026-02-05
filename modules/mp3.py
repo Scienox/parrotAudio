@@ -2,19 +2,19 @@ import vlc
 import time
 import os
 import threading
-from .playlist import Playlist
+from .queue_music import QueueMusic
 
 
 class Mp3:
     def __init__(self):
-        self.playlist = Playlist()
+        self.queue = QueueMusic()
         self.instance = None
         self.player = None
         self.media = None
         self.music_folder = "/home/bexjo/Music/"
         self.on_music_end = self.play
         self.status = {"Is playing": self.is_playing,
-        "Local files": self.playlist.found_files_from_folder,
+        "Local files": self.queue.found_files_from_folder,
         }
         self._init_vlc()
 
@@ -34,7 +34,7 @@ class Mp3:
     
     def __play(self):
         self._init_vlc()
-        song = self.playlist.get_current()
+        song = self.queue.get_current()
         if not song:
             return
 
@@ -57,7 +57,7 @@ class Mp3:
         threading.Thread(target=self.__play, daemon=True).start()
 
     def next(self):
-        self.current = self.playlist.next_music()
+        self.current = self.queue.next_music()
     
     def stop(self):
         if self.player:
@@ -84,7 +84,7 @@ class Mp3:
     
     def get_duration(self):
         self._init_vlc()
-        song = self.playlist.get_current()
+        song = self.queue.get_current()
         if not song: return 0
         media = self.instance.media_new(song.path)
         media.parse()
@@ -110,17 +110,17 @@ class Mp3:
                 if cmd == 'add':
                     if os.path.isfile(self.music_folder + value):
                         title = value.split('/')[-1].split('.')[0]
-                        self.playlist.add_local(value, title=title)
+                        self.queue.add_local(value, title=title)
                         server.send_response(message, f"Musique ajoutée: {value}")
                     else:
                         server.send_response(message, f"Erreur: Fichier introuvable: {value}")
                 elif cmd == "show":
-                    if value == "playlist":
-                        titles = self.playlist.show_music_titles()
-                        response = f"Playlist:\n{titles}"
+                    if value == "queue":
+                        titles = self.queue.show_music_titles()
+                        response = f"Queue:\n{titles}"
                         server.send_response(message, response)
                     elif value == "files":
-                        files = self.playlist.found_files_from_folder()
+                        files = self.queue.found_files_from_folder()
                         response = "Fichiers musicaux:\n" + files
                         server.send_response(message, response)
                     else:
@@ -135,10 +135,10 @@ class Mp3:
                 # Lancer la musique en arrière-plan
                 thread = threading.Thread(target=self.play, daemon=True)
                 thread.start()
-                server.send_response(message, f"{self.playlist.get_current().title} en lecture")
+                server.send_response(message, f"{self.queue.get_current().title} en lecture")
             elif cmd == 'next':
                 self.next()
-                server.send_response(message, f"Passage à : {self.playlist.get_current().title}")
+                server.send_response(message, f"Passage à : {self.queue.get_current().title}")
             elif cmd == 'pause':
                 self.pause()
                 server.send_response(message, "Lecture en pause")
@@ -149,3 +149,4 @@ class Mp3:
                 server.send_response(message, "Erreur: Commande inconnue")
         except Exception as e:
             server.send_response(message, f"Erreur: {e}")
+            
