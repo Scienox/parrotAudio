@@ -153,7 +153,7 @@ class Mp3:
                     server.send_response(message, "Erreur: Commande inconnue")
             
             elif tripleCmd:
-                cmd, value1, value2 = tripleCmd.split(":")
+                cmd, value1, value2 = cmd.split(":")
                 if cmd == "set":
                     if value1 == "playlist":
                         self.stop()
