@@ -11,7 +11,8 @@ class Mp3:
         self.instance = None
         self.player = None
         self.media = None
-        self.music_folder = "/home/bexjo/Music/"
+        self.music_folder = os.environ['HOME'] + "/Music/"
+        self.playlist_folder = os.environ['HOME'] + "/Playlist/"
         self.on_music_end = self.play
         self.status = {"Is playing": self.is_playing,
         "Local files": self.queue.found_files_from_folder,
@@ -81,7 +82,27 @@ class Mp3:
                 print(f"Volume défini à {volume}%")
             else:
                 print("Le volume doit être entre 0 et 100.")
-    
+
+    def get_playlists(self):
+        return "|".join(file for file in os.listdir(self.playlist_folder))
+
+    def read_playlist(self, playlist_name):
+        with open(os.path.join(self.playlist_folder, playlist_name), "r") as file:
+            lines = file.read().splitlines()
+            logic_queue = QueueMusic()
+            for line in lines:
+                id_title, media_type, path_title, title = line.split(":")
+                if media_type == "local":
+                    logic_queue.add_local(path_title, title)
+                elif media_type == "url":
+                    continue
+            file.close()
+            return logic_queue
+
+    def set_playlist(self, playlist_name):
+        if playlist_name in self.get_playlists():
+            self.queue = self.read_playlist(playlist_name)
+
     def get_duration(self):
         self._init_vlc()
         song = self.queue.get_current()
