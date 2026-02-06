@@ -125,7 +125,8 @@ class Mp3:
         cmd = message['message'].lower()
         
         try:
-            doubleCmd = True if ':' in cmd else False
+            doubleCmd = len(cmd.split(':')) < 3
+            tripleCmd = True if ':' in cmd and ':' in cmd.split(':')[1] else False
             if doubleCmd:
                 cmd, value = cmd.split(':', 1)
                 if cmd == 'add':
@@ -148,6 +149,14 @@ class Mp3:
                         server.send_response(message, "Erreur: Commande show inconnue")
                 else:
                     server.send_response(message, "Erreur: Commande inconnue")
+            
+            elif tripleCmd:
+                cmd, value1, value2 = tripleCmd.split(":")
+                if cmd == "set":
+                    if value1 == "playlist":
+                        self.stop()
+                        self.set_playlist(value2)
+                        server.send_response(message, f"Playlist définie: {value2}")
 
             elif cmd == 'get_status':
                 server.send_response(message, self.get_status())
@@ -163,6 +172,9 @@ class Mp3:
             elif cmd == 'pause':
                 self.pause()
                 server.send_response(message, "Lecture en pause")
+            elif cmd == 'stop':
+                self.stop()
+                server.send_response(message, "Lecture arrêtée")
             elif cmd == 'resume':
                 self.resume()
                 server.send_response(message, "Lecture reprise")
