@@ -127,6 +127,8 @@ class Mp3:
         try:
             doubleCmd = True if (1 < len(cmd.split(':')) < 3) else False
             tripleCmd = True if ':' in cmd and ':' in cmd.split(':')[1] else False
+            if tripleCmd and doubleCmd:
+                doubleCmd = False
             if doubleCmd:
                 cmd, value = cmd.split(':', 1)
                 if cmd == 'add':
