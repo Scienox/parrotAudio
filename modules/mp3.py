@@ -125,7 +125,7 @@ class Mp3:
         cmd = message['message'].lower()
         
         try:
-            doubleCmd = 1 < len(cmd.split(':')) < 3
+            doubleCmd = True if (1 < len(cmd.split(':')) < 3) else False
             tripleCmd = True if ':' in cmd and ':' in cmd.split(':')[1] else False
             if doubleCmd:
                 cmd, value = cmd.split(':', 1)
