@@ -83,6 +83,9 @@ class Mp3:
             else:
                 print("Le volume doit être entre 0 et 100.")
 
+    def get_volume(self):
+        return self.player.audio_get_volume()
+
     def get_playlists(self):
         return "|".join(file for file in os.listdir(self.playlist_folder))
 
@@ -147,6 +150,11 @@ class Mp3:
                         server.send_response(message, response)
                     else:
                         server.send_response(message, "Erreur: Commande show inconnue")
+                elif cmd == "get":
+                    if value == "status":
+                        server.send_response(message, self.get_status())
+                    elif value == "volume":
+                        server.send_response(message, f"Volume: {self.get_volume()}%")
                 else:
                     server.send_response(message, "Erreur: Commande inconnue")
             
@@ -157,9 +165,9 @@ class Mp3:
                         self.stop()
                         self.set_playlist(value2)
                         server.send_response(message, f"Playlist définie: {value2}")
-
-            elif cmd == 'get_status':
-                server.send_response(message, self.get_status())
+                    elif value1 == "volume":
+                        self.set_volume(int(value2))
+                        server.send_response(message, f"Volume défini: {value2}%")
 
             elif cmd == 'play':
                 # Lancer la musique en arrière-plan
