@@ -45,7 +45,6 @@ class QueueMusic:
     def add_url(self, url: str, title: str = None):
         self.__add("url", url, title)
         
-    
     def next_music(self):
         """Passe à la musique suivante."""
         if self.current and self.current.next:

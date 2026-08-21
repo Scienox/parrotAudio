@@ -57,6 +57,9 @@ class Mp3:
     def play(self):
         threading.Thread(target=self.__play, daemon=True).start()
 
+    def previous(self):
+        self.current = self.queue.prev_music()
+
     def next(self):
         self.current = self.queue.next_music()
     
@@ -101,6 +104,20 @@ class Mp3:
                     continue
             file.close()
             return logic_queue
+
+    def add_playlist(self, playlist_name):
+        with open(os.path.join(self.playlist_folder, playlist_name), "w") as file:
+            file.close()
+
+    def add_music_to_playlist(self, playlist_name, path_title, title):
+        logic_queue = self.read_playlist(playlist_name)
+        last_line = logic_queue.size
+        with fileinput.FileInput(files=file_path, inplace=True) as file:
+            for current_line_number, line in enumerate(file, 1):
+                if current_line_number == line_number:
+                    f
+                else:
+                    print(line)
 
     def set_playlist(self, playlist_name):
         if playlist_name in self.get_playlists():
@@ -174,6 +191,9 @@ class Mp3:
                 thread = threading.Thread(target=self.play, daemon=True)
                 thread.start()
                 server.send_response(message, f"{self.queue.get_current().title} en lecture")
+            elif cmd == 'previous':
+                self.previous()
+                server.send_response(message, f"Passage à : {self.queue.get_current().title}")
             elif cmd == 'next':
                 self.next()
                 server.send_response(message, f"Passage à : {self.queue.get_current().title}")
