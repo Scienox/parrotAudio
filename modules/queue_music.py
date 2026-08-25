@@ -8,6 +8,10 @@ class NodeMusic:
         self.title = title
         self.next = None
         self.prev = None
+
+    def delete(self): 
+        self.next = self.next.next
+        self.next.prev = self.prev
     
     def __repr__(self):
         return f"NodeMusic(title='{self.title}')"
@@ -62,7 +66,7 @@ class QueueMusic:
     def get_current(self):
         return self.current
     
-    def _iterate_playlist(self):
+    def _iter_queue(self):
         """Itère sur toutes les musiques de la playlist."""
         node = self.head
         for _ in range(self.size):
@@ -70,7 +74,7 @@ class QueueMusic:
             node = node.next
 
     def show_music_titles(self):
-        value = "|".join(node.title for node in self._iterate_playlist())
+        value = "|".join(node.title for node in self._iter_queue())
         return value
     
     def found_files_from_folder(self, folder=None):
@@ -79,6 +83,17 @@ class QueueMusic:
         files = listdir(folder)
         files = "|".join(f for f in files)
         return files
+
+    def delete_this_index_in_queue(self, index):
+        if self.size:
+            if (0 <= index < self.size):
+                for i, node in enumerate(self._iter_queue()):
+                    if i == index:
+                        if self.size == 1:
+                            self.clear()
+                        else:
+                            node.delete()
+                            self.size -= 1
     
     def clear(self):
         self.head = self.current = None
