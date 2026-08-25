@@ -173,6 +173,7 @@ class Mp3:
                     elif value == "volume":
                         server.send_response(message, f"Volume: {self.get_volume()}%")
                 elif cmd == "delete":
+                    print("delete runing")
                     index = int(value)
                     self.queue.delete_this_index_in_queue(index)
                     server.send_response(message, f"Musique supprimée")
